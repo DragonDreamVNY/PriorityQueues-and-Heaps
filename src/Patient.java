@@ -49,7 +49,7 @@ public class Patient {
     
     @Override
     public String toString(){
-        return "\nPatient Name:" + this.patientName + "\t priority : " + this.priority + " is waiting... " + "\n";
+        return "Patient Name: " + this.patientName +  " is waiting... " + " priority : " + this.priority + "\n";
     }
     
 }

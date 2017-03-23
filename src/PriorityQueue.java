@@ -29,18 +29,18 @@ public class PriorityQueue {
     
     
     public void makeEmpty( ) { numPatients = 0; }
-    
-    
+
     //1. Add the element to the bottom level of the heap (a 'leaf').
     //2. Compare the added element with its parent; if they are in the correct order, stop.
     //3. If not, swap the element with its parent and return to the previous step.
         // Function: Add newItem to the queue. 
 	// PreCondition: Queue is not full
-	// PostCondition: newItem is in the queue
+	// PostCondition: newItem is in the queue 
     public void enQueue (Patient newPatient) { // 'insert' new instance of Patient
         numPatients++; // numItems + 1 slots of the array are filled
         patientsHeap.patientsWaitingArr[numPatients -1] = newPatient; // items.elements[numItems-1] = newItem; //put new item in next available slot or Remove root element
         patientsHeap.reheapUp(0, numPatients -1); // fix the order
+        System.out.println("Added new Patient in Queue : " + newPatient.getPatientName());
     }
     
     
@@ -67,6 +67,21 @@ public class PriorityQueue {
     }
     
     
+    public String printQueue(){
+        String output = "";
+        
+        for (int i =0; i < numPatients; i++){
+            output += patientsHeap.patientsWaitingArr[i];
+        }
+        return output;
+    }
     
+    // returns name of root (the top priority Patient)
+    public String nextPriority(){
+        String topPriority = "";
+        topPriority = patientsHeap.patientsWaitingArr[0].getPatientName();
+        
+        return topPriority;
+    }
     
 }// end PQ Class

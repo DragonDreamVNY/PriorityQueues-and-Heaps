@@ -1,3 +1,6 @@
+
+import javax.swing.JOptionPane;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -11,16 +14,26 @@
  * @author k00223361 VINCENT LEE [DragonDream]
  */
 public class PatientQueueGUI extends javax.swing.JFrame {
-    PriorityQueue queue = new PriorityQueue(0); //create new empty queue
+    PriorityQueue queue = new PriorityQueue(30); //create new queue for small A+E
     //private Patient nextPatient = patients.patientsWaiting[0];
     
     /*** Creates new form PatientQueueGUI ***/
     public PatientQueueGUI() {
         initComponents();
+        
+//        Patient p1 = new Patient( "vinny", 2 );
+//        queue.enQueue(p1);
+//        
+//        Patient p2 = new Patient( "kevin", 3 );
+//        queue.enQueue(p2);
+        
         //System.out.println("current queue size : " + link.size());
-        statusOut_textField.setText("Number of Patienst in Queue : " + Integer.toString(queue.size()) );
-        waitingList_txtArea.setText("There are no Patients yet");
-        patientName_textField.requestFocus(true); // focus input text field on run        
+        //statusOut_textField.setText( "Number of Patients in Queue : " + Integer.toString(queue.size()) );
+        numberPatients_label.setText( Integer.toString(queue.size()) );
+        //statusOut_textField.setText( "Next Patient is : " + p1.getPatientName() );
+        patientName_textField.requestFocus(true); // focus input text field on run   
+        
+        
     }
 
     /**
@@ -45,6 +58,7 @@ public class PatientQueueGUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         waitingList_txtArea = new javax.swing.JTextArea();
         patientsWaitingLabel = new javax.swing.JLabel();
+        numberPatients_label = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -70,6 +84,12 @@ public class PatientQueueGUI extends javax.swing.JFrame {
             }
         });
 
+        priority_textField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                priority_textFieldActionPerformed(evt);
+            }
+        });
+
         statusOut_textField.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
 
         waitingList_txtArea.setColumns(20);
@@ -78,6 +98,8 @@ public class PatientQueueGUI extends javax.swing.JFrame {
 
         patientsWaitingLabel.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         patientsWaitingLabel.setText("Patients in Waiting Area :");
+
+        numberPatients_label.setText("0");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -90,13 +112,17 @@ public class PatientQueueGUI extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(98, 98, 98)
                 .addComponent(patientsWaitingLabel)
+                .addGap(18, 18, 18)
+                .addComponent(numberPatients_label)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
-                .addComponent(patientsWaitingLabel)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(patientsWaitingLabel)
+                    .addComponent(numberPatients_label))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -172,19 +198,49 @@ public class PatientQueueGUI extends javax.swing.JFrame {
 
     private void callPatient_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_callPatient_btnActionPerformed
         // Call next Patient, dequeue the current, display next patient name with highest prioritty (root)
-        queue.deQueue( Heap.patientsWaitingArr[0] ); //remove the root (highest priority instance of Patient
+        queue.deQueue( Heap.patientsWaitingArr[0] ); //remove the root (highest priority instance of Patient)
+        
+        //return top priority patient at patientsHeap.patientsWaitingArr[0].getPatientName();
+        statusOut_textField.setText( "Next Patient is : " + queue.nextPriority() );
+        
+        numberPatients_label.setText( Integer.toString(queue.size()) ); // update label number of Patients in Q
+        waitingList_txtArea.setText( queue.printQueue() ); //update waiting area with current waiting Q
+        
+        if( queue.size()  == 0){
+            statusOut_textField.setText(" "); // update the "next patient name" field
+        }
     }//GEN-LAST:event_callPatient_btnActionPerformed
 
     private void addPatient_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPatient_btnActionPerformed
         // add a patient with priortiy sort to PriorityQueue
         // Patient( int name, int priority)
-        String patientName =  patientName_textField.toString();
-        int patienyPriority = Integer.parseInt( priority_textField.toString() );
-        Patient newPatient = new Patient( patientName, patienyPriority );
+        String patientName =  patientName_textField.getText();
+        int patientPriority = Integer.parseInt( priority_textField.getText());
         
-        queue.enQueue(newPatient); //insert new patient with (name & priority attributes)
+        if( patientPriority > 0 && patientPriority < 6){
+
+            Patient newPatient = new Patient( patientName, patientPriority );
+            queue.enQueue(newPatient); //insert new patient with (name & priority attributes)
+
+            statusOut_textField.setText( "Next Patient is : " + queue.nextPriority() );
+
+            numberPatients_label.setText( Integer.toString(queue.size()) ); 
+
+            waitingList_txtArea.setText( queue.printQueue() ); 
+        } else {
+            JOptionPane.showMessageDialog(null, "Please enter a priority between 1 (low) and 5 (high)");
+            priority_textField.requestFocus(true);
+            
+        }
+        
     }//GEN-LAST:event_addPatient_btnActionPerformed
 
+    private void priority_textFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priority_textFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_priority_textFieldActionPerformed
+
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -227,6 +283,7 @@ public class PatientQueueGUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel numberPatients_label;
     private javax.swing.JLabel patientLabel;
     private javax.swing.JTextField patientName_textField;
     private javax.swing.JLabel patientsWaitingLabel;
